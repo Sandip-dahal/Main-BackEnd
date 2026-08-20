@@ -1,8 +1,10 @@
 import {asyncHandler} from "../Utils/asyncHandler.js"
 import {ApiError} from "../Utils/ApiError.js"
-import { User, user} from "../Models/user.model.js"
-import {uploadCloudinary} from "../Utils/Cloudinary.js"
+import { User } from "../Models/user.model.js"
+import {uploadOnCloudinary} from "../Utils/Cloudinary.js"
 import { ApiResponse } from "../Utils/ApiResponse.js"
+import { RemoveLocalFiles } from "../Utils/RemoveLocalFiles.js"
+
 
 
 const registerUser = asyncHandler( async(req, res)=>{
@@ -16,27 +18,43 @@ const registerUser = asyncHandler( async(req, res)=>{
     //check for user creation 
     //return response
     
-
+    //get user data
     const { fullName, email, username, password} = req.body
-    console.log("email", email)
+    //console.log("email", email)
 
+
+    // check every filed for empty...
     if(
         [fullName, email,username,password].some((field) =>
             !field?.trim() 
         )
     ){
+        //RemoveLocalFiles(req.files)
         throw new ApiError(400, "all fields are required")
     }
 
-    const existedUser = User.findOne({
+
+
+    //Is there already user exist with this username or mail
+    const existedUser = await User.findOne({
         $or:[{ username }, { email }]
     })
     if(existedUser){
+        //RemoveLocalFiles(req.files)
         throw new ApiError(409, "User with email or username already exists")
     }
 
+
+
+
+//local path of avatar .......
+    //console.log(req.files)
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+
+    let coverImageLocalPath;
+    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length >0){
+        coverImageLocalPath = req.files.coverImage[0].path
+    }
 
     if(!avatarLocalPath){
         throw new ApiError(400,"Avatar file is required")
@@ -64,7 +82,7 @@ const registerUser = asyncHandler( async(req, res)=>{
 
 
     // preparing reposne to user when user is created, expect password and refreshtoken 
-    const createdUser = await user.findById(user._id).select(
+    const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
     )
     

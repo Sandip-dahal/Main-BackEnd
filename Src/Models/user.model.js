@@ -12,6 +12,8 @@ const userSchema = new Schema(
             lowercase: true,
             trim: true,
             index: true,
+            minlength:[3, "USername must be at leat 3 character"],
+            maxlength:[20,"Username cam only contain 20 character"]
         },
         email:{
             type:String,
@@ -19,6 +21,7 @@ const userSchema = new Schema(
             unique: true,
             lowercase: true,
             trim: true,
+            match:[/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, "please enter a valid email"]
         },
         fullName:{
             type:String,
@@ -37,7 +40,7 @@ const userSchema = new Schema(
         watchHistory:[
             {
                 type:Schema.Types.ObjectId,
-                ref: Video ,
+                ref: "Video",
 
             }
         ],
@@ -53,12 +56,12 @@ const userSchema = new Schema(
 
 
 //middelware ......
-userSchema.pre("save",async function(next) {
-    if(!this.isModified("password")) return next();
+userSchema.pre("save",async function() {
+    if(!this.isModified("password")) return;
 
 
-    this.password = bcrypt.hash(this.password,10)
-    next()
+    this.password = await bcrypt.hash(this.password,10);
+    
 })
 
 //compare password..

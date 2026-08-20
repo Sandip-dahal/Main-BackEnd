@@ -1,4 +1,4 @@
-import {v2} from 'cloudinary'     
+import {v2  as cloudinary} from 'cloudinary'     
 import fs from 'fs'  //file system, helps to read, dlt  etc.. for files 
 
 
@@ -10,7 +10,7 @@ cloudinary.config({
 })
 
 
-const uploadCloudinary = async(localFilePath)  =>{
+const uploadOnCloudinary = async(localFilePath)  =>{
     try{
         if(!localFilePath) return null
         //upload file in cloudinary
@@ -19,6 +19,7 @@ const uploadCloudinary = async(localFilePath)  =>{
         })
         //file has been uplaoded suucessfuly
         console.log("file is uploaded in cloudinary", response.url)
+        fs.unlinkSync(localFilePath)
         return response
     }
     catch(error){
@@ -28,4 +29,4 @@ const uploadCloudinary = async(localFilePath)  =>{
     }
 
 }
-export {uploadCloudinary}  
+export {uploadOnCloudinary}  
