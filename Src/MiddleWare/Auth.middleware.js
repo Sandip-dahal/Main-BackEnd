@@ -1,6 +1,6 @@
-import { User } from "../Models/user.model";
-import { ApiError } from "../Utils/ApiError";
-import { asyncHandler } from "../Utils/asyncHandler";
+import { User } from "../Models/user.model.js";
+import { ApiError } from "../Utils/ApiError.js";
+import { asyncHandler } from "../Utils/asyncHandler.js";
 import jwt from "jsonwebtoken"
 
 
@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken"
 // the same  that requesting the logout, to do that we need the user id
 // which we are unable to get in logout methods in controller,
 // so this middleware provide the login user details through accesstoken
-export const verifyjwt = asyncHandler( async(req, req, next) =>{
+export const verifyjwt = asyncHandler( async(req, res, next) =>{
     try {
         const token = req.cookies.accessToken || req.header("Authorization")?.replace("Bearer ","")
     
@@ -33,4 +33,3 @@ export const verifyjwt = asyncHandler( async(req, req, next) =>{
     }
 })
 
-export {verifyjwt}
