@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {  registerUser, loginUser, logoutUser, refreshAccessToken  } from "../Controllers/User.controller.js";
+import {  registerUser, loginUser, logoutUser, refreshAccessToken, updateUSerCoverImage, updateUserAvatar  } from "../Controllers/User.controller.js";
 import {upload} from "../MiddleWare/Multer.middleware.js"
 import { verifyjwt } from "../MiddleWare/Auth.middleware.js";
 import { RemoveLocalFiles } from "../Utils/RemoveLocalFiles.js";
@@ -24,6 +24,11 @@ router.route("/register").post(
 )
 
 router.route("/login").post(loginUser)
+router.route("/updateavatar").post(
+    verifyjwt,
+    upload.single("avatar"),
+    updateUserAvatar
+)
 
 //Secure routes
 router.route("/logoutUser").post(verifyjwt,logoutUser)
